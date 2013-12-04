@@ -19,7 +19,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Static File Storage Credentials
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = "django_{{project_name}}_static_staging"
+AWS_STORAGE_BUCKET_NAME = "{{project_name}}_stag"
 
 # django-storages file storage backend adapters
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'

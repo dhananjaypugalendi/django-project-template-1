@@ -5,14 +5,17 @@ django-project-template is a Django 1.6+ project template, giving you a skeleton
 ## Features
 
 + Separate dev, stag, and prod environments.
-    + cleanly separates settings and requirements
+    + development, staging, and production settings
+    + development and production (incl. staging) requirements
     + switch environments easily based on APP_ENV env var.
 + [django-storages](http://django-storages.readthedocs.org/en/latest/) static asset storage backend integration with S3.
 + Environment variable based database configuration
     + [dj-database-url](https://github.com/kennethreitz/dj-database-url) configures the database from the DATABASE_URL env var.
     + database passwords kept in environment variables and out of source.
     + integrates with Amazon RDS, Heroku DBs, and others easily.
-+ Deployable directly to Heroku.
++ Simple deployment to Heroku
+    + HTTP redirection to HTTPS (except in development)
+    + uses Heroku's free piggyback wildcard SSL.
 + Helps you construct organized web applications that follow the [12factor](http://12factor.net/) methodology.
 + Default project 404 and 500 error pages. 
 
@@ -20,7 +23,7 @@ django-project-template is a Django 1.6+ project template, giving you a skeleton
 
 Create a virtual environment in which to install Django and other pip packages. See [virtualenv](https://pypi.python.org/pypi/virtualenv) or [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/))
 
-    workon django-myproj  # activate a virtualenvwrapper virtualenv
+    workon myproj            # activate a virtualenvwrapper virtualenv
     pip install django
 
 If you have git cloned [django-project-template](https://github.com/dghubble/django-project-template),
@@ -39,7 +42,7 @@ otherwise,
 
 A *myproj* project directory containing a README.md, a manage.py script, and a *myproj* Python package directory was created. Rename the outer (project) directory to anything you wish, but don't modify the inner (package) directory or package name.
 
-    mv myproj convenient-name   # optional
+    mv myproj newname        # optional
 
 If you specified an output path after *myproj* in the template command, the project directory *contents* will be placed at that location, not within a project directory.
 
@@ -80,19 +83,19 @@ Want a particular feature? Discovered a bug or problem? Open an issue. Here are 
 If you haven't already, install and configure MySQL on your local machine ([guide]()). 
 If you haven't already, install and configure PostgreSQL on your local machine ([guide]()). 
 
-Create a database user and database django_{{project_name}} to use for {{project_name}} development. Ensure the database url string under DATABASES in {{project_name}}/settings.py corresponds to your setup.
+Create a database user and also a database {{project_name}}_dev to use for development. Ensure the database url string under DATABASES in {{project_name}}/settings.py corresponds to your setup.
 
 ## Setup
 
 Create a virtual environment in which to install Python pip packages. Virtual environment activation with [virtualenv](https://pypi.python.org/pypi/virtualenv),
 
-    virtualenv venv            # create virtualenv venv
-    source venv/bin/activate   # activate 
+    virtualenv venv          # create virtualenv venv
+    source venv/bin/activate # activate 
 
 or with [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/),
 
-    mkvirtualenv django-myproj # create and activate environment
-    workon django-myproj       # reactivate existing environment
+    mkvirtualenv myproj       # create and activate environment
+    workon myproj             # reactivate existing environment
 
 Install development dependencies,
 
@@ -100,11 +103,13 @@ Install development dependencies,
 
 Setup database tables,
 
-    python manage.py syncdb    # create neccessary tables
+    python manage.py syncdb  # create neccessary tables
 
 Run the web application locally,
 
     python manage.py runserver # 127.0.0.1:8000
+
+The standard Django DEBUG mode congrats page should be visible.
 
 
 ## Workflow
@@ -116,9 +121,9 @@ Switch environments by changing the value of the APP_ENV environment variable.
 
 The `development` or `dev` environment runs the Django application with DEBUG set to true on a small development server which auto-reloads changed files. Django trackbacks are shown instead of error pages. Django itself serves the static assets located inside your project and apps. The database you have created on your local machine is used
 
-The `staging` or `stag` environment can be run both locally or deployed because it includes both in ALLOWED_HOSTS. If deployed, the staging deployment should be separate from the production deployment (e.g. different Heroku application). The staging environment uses production type deployed static assets and databases though the actual hosted assets use a different S3 bucket from production and the staging database should be separate from the production database. Authentication keys or credentials are kept in environment variables, not in source.
+The `staging` or `stag` environment can be run both locally or deployed because it includes both in ALLOWED_HOSTS. If deployed, the staging deployment should be separate from the production deployment (e.g. different Heroku application). The staging environment uses production type deployed static assets and databases though the actual hosted assets use a different S3 bucket from production and the staging database should be separate from the production database. Authentication keys or credentials are kept in environment variables, not in source. The staging environment uses the production requirements 'requirements/production.txt' for enforced parity.
 
-Typically, when moving from `development` to `staging`, first switch to the staging environment locally and run the project with manage.py's runserver to test whether interactions with production type static assets and databases works without issue. Staging deployments should use production type webservers so that `staging` is identical to `production` except for the names of buckets, dbs, etc.
+Typically, when moving from `development` to `staging`, first switch to the staging environment locally and run the project with manage.py's runserver to test whether interactions with production type static assets and databases works without issue (install production.txt requirements first!). Staging deployments should use production type webservers so that `staging` is identical to `production` except for the names of buckets, dbs, etc.
 
 The `production` or `prod` environment is the environment in which your application should run in the real world. All authentication keys or credentials are kept in environment variables, not in source. The project should be served by a production quality webserver such as [gunicorn](http://gunicorn.org/). Static assets should be served from a a globally available file store (S3) or CDN. Production databases should be backed up and fortified. Production static asset stores and databases should be touched with extreme caution.
 
@@ -136,7 +141,7 @@ In development, static assets are hosted at '<base_url>/static/' + namespacing a
 
 In staging and production environments, using a web process to serve static assets is not appropriate. {{project_name}} uses `django-storages` adapters to upload collected static assets to Amazon S3 and to replace static template tags correctly.
 
-First, create [S3 buckets](https://console.aws.amazon.com/s3) django_{{project_name}}_static and django_{{project_name}}_static_staging (set in {{project_name}}/settings/staging.py and {{project_name}}/settings/production.py) for static assets. Then create an [IAM](https://console.aws.amazon.com/iam/home) user django_{{project_name}} with the Full S3 Access permission policy.
+First, create [S3 buckets](https://console.aws.amazon.com/s3) {{project_name}}-static-stag and {{project_name}}-static (set in {{project_name}}/settings/staging.py and {{project_name}}/settings/production.py) for static assets. Then create two [IAM](https://console.aws.amazon.com/iam/home) users {{project_name}}_stag and {{project_name}} with the Full S3 Access permission policy.
 
 Be sure the APP_ENV, SECRET_KEY, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY environment variables are set in your environment.
 
@@ -165,15 +170,28 @@ Before you deploy, customize the ALLOWED_HOSTS in {{project_name}}/settings/stag
 
 ### Heroku
 
-Create Heroku app repo and add Git remote `heroku`,
+Create Heroku app repo and add Git `staging` remote,
 
-    heroku login               # if you haven't already
-    heroku create              # from within project directory
-    
+    heroku login             # if you haven't already
+    heroku create --remote staging  # within project dir
+    heroku create --remote production
+    git remote -v            # expect: origin, staging, production
+
+By default, Heroku would create a remote named 'heroku', but here the project becomes associated with two Heroku apps, one for `staging` and another for `production`. When git pushing, specify the correct remote and when using heroku commands use the `--remote remote-name` or `-r remote-name` options to specify the application to which deployments should go.
+
+To tell the `heroku` command to default to `staging` for this project,
+
+    git config heroku.remote staging
+
+although you may prefer to require it be specified explicitly.
+
+Continuing, the deployment instructions show a deployment to staging, but the production deployment procedure is analogous (add `-r production` after `heroku` commands)
+
 Now rename your project on Heroku,
 
-    heroku apps:rename newname # dashes instead of underscores
-    git remote -v              # should list 'heroku' as a remote repo
+    heroku apps:rename {{project_name}}-stag -r staging
+    heroku apps:rename {{project_name}} -r production
+    # we prefer dashed names over underscores
 
 Define the following environment variables for the Heroku application:
 
@@ -184,24 +202,29 @@ Define the following environment variables for the Heroku application:
 
 as follows,
 
-    heroku config:set APP_ENV=staging
-    heroku config:set SECRET_KEY='random secret...'
+    heroku config:set APP_ENV=staging -r staging
+    heroku config:set SECRET_KEY='...' -r staging
     ...
-    heroku config              # check env vars are correct
+    # check env vars are correct
+    heroku config -r staging
+    heroku config -r production
 
 Turn on Heroku's `user-env-compile` feature so `django-storages` can read environment variables to determine how to collect and upload static assets.
 
-    heroku labs:enable user-env-compile
+    heroku labs:enable user-env-compile -r staging
 
 
 #### Database Connection
 
 ##### MySQL
 
-For MySQL, [setup]() your [Amazon RDS](https://console.aws.amazon.com/rds/home) instance, database user, and database. Be sure to require [SSL encrypted](http://aws.amazon.com/rds/faqs/#54) connections. Alternately, use another [supported](https://addons.heroku.com/?q=mysql) MySQL provider.
+For MySQL, [setup]() your [Amazon RDS](https://console.aws.amazon.com/rds/home) instance. Create a user {{project_name}}_stag and database {{project_name}}_stag for staging. Also create user {{project_name}} and database {{project_name}} for production. Be sure to require [SSL encrypted](http://aws.amazon.com/rds/faqs/#54) connections. Alternately, use another [supported](https://addons.heroku.com/?q=mysql) MySQL provider.
 
-    heroku addons:add amazon_rds url=mysql2://user:pass@rdshostname.amazonaws.com:3306/dbname
-    heroku config              # check DATABASE_URL is correct           
+    heroku addons:add amazon_rds --url=mysql2://user:pass@rdshostname.amazonaws.com:3306/dbname -r staging
+    # check DATABASE_URL is correct
+    heroku config -r staging 
+    # remove Postgresql addon which Heroku may add automatically
+    heroku addons:remove heroku-postgresql:dev          
 
 For conventience, add you MYSQL_HOST to an environment variable so you can connect to your database directly if needed.
 
@@ -217,24 +240,24 @@ For PostgreSQL, ...
 
 Push your application to Heroku,
 
-    git push heroku master:master
+    git push staging master:master 
 
 One-off commands allow setting up database tables and uploading static assets as you would do locally. Heroku's `user-env-compile` lab should allow `django-storages` to automatically collect and upload static assets so the first command may not be needed.
 
-    heroku run python manage.py collectstatic
-    heroku run python manage.py syncdb
+    heroku run python manage.py collectstatic -r staging
+    heroku run python manage.py syncdb -r staging
 
 Check up on your Heroku application,
 
-    heroku open                # open application in browser
-    heroku ps                  # see web/worker counts and stats
+    heroku open              # open application in browser
+    heroku ps                # see web/worker counts and stats
 
 #### Troubleshooting
 
     heroku ps
-    heroku logs                # check Heroku logs
-    heroku config              # check your Heroku env vars
-    heroku restart             # restart dynos
+    heroku logs              # check Heroku logs
+    heroku config            # check your Heroku env vars
+    heroku restart           # restart dynos
 
 
 ### EC2
