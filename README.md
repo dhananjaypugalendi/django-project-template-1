@@ -83,7 +83,7 @@ Want a particular feature? Discovered a bug or problem? Open an issue. Here are 
 If you haven't already, install and configure MySQL on your local machine ([guide]()). 
 If you haven't already, install and configure PostgreSQL on your local machine ([guide]()). 
 
-Create a database user and also a database {{project_name}}_dev to use for development. Ensure the database url string under DATABASES in {{project_name}}/settings.py corresponds to your setup.
+Create a database user and also a database {{project_name}}_dev to use for development. Ensure the database url string under DATABASES in {{project_name}}/settings/common.py corresponds to your setup.
 
 ## Setup
 
@@ -220,7 +220,7 @@ Turn on Heroku's `user-env-compile` feature so `django-storages` can read enviro
 
 For MySQL, [setup]() your [Amazon RDS](https://console.aws.amazon.com/rds/home) instance. Create a user {{project_name}}_stag and database {{project_name}}_stag for staging. Also create user {{project_name}} and database {{project_name}} for production. Be sure to require [SSL encrypted](http://aws.amazon.com/rds/faqs/#54) connections. Alternately, use another [supported](https://addons.heroku.com/?q=mysql) MySQL provider.
 
-    heroku addons:add amazon_rds --url=mysql2://user:pass@rdshostname.amazonaws.com:3306/dbname -r staging
+    heroku addons:add amazon_rds --url=mysql2://user:pass@rdshost:3306/dbname -r staging
     # check DATABASE_URL is correct
     heroku config -r staging 
     # remove Postgresql addon which Heroku may add automatically
