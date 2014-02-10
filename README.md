@@ -1,3 +1,5 @@
+{% if False %}
+
 # django-project-template
 
 django-project-template is a Django 1.6+ project template, giving you a skeleton web application with some useful, but general, features. 
@@ -17,85 +19,105 @@ django-project-template is a Django 1.6+ project template, giving you a skeleton
     + HTTP redirection to HTTPS (except in development)
     + uses Heroku's free piggyback wildcard SSL.
 + Helps you construct organized web applications that follow the [12factor](http://12factor.net/) methodology.
-+ Default project 404 and 500 error pages. 
++ Default project 404 and 500 error pages.
+
+## Prerequisites
+
+Be sure you have the following installed on your development machine:
+
++ Python >= 2.7
++ Git >= 1.7
++ Virtualenv >= 1.9
++ Database (either one):
+    + MySQL >= 5.6 ([guide]())
+    + Postgres >= 9.2 ([guide]())
++ (recommended) Virtualenvwrapper >= 4.0
 
 ## Usage
 
 Create a virtual environment in which to install Django and other pip packages. See [virtualenv](https://pypi.python.org/pypi/virtualenv) or [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/))
 
-    workon myproj            # activate a virtualenvwrapper virtualenv
+    workon djproj            # activate a Python virtual environment
     pip install django
 
-If you have git cloned [django-project-template](https://github.com/dghubble/django-project-template),
+If you have cloned [django-project-template](https://github.com/dghubble/django-project-template) with
 
-    django-admin.py startproject \
+    git clone https://github.com/dghubble/django-project-template
+
+you can generate a new project with,
+
+    django-admin.py startproject djproj [dest] \
     --template /path/to/django-project-template \
-    -e py,md,html \
-    -n Procfile myproj
+    -e py,rst,md,html \
+    -n Procfile
 
-otherwise,
+Otherwise,
 
-    django-admin.py startproject \
-    --template https://github.com/dghubble/django-project-template/zipball/master \
-    -e py,md,html \
-    -n Procfile myproj
+    django-admin.py startproject djproj [dest] \
+    --template https://github.com/dghubble/django-project-template/archive/master.zip \
+    -e py,rst,md,html \
+    -n Procfile
 
-A *myproj* project directory containing a README.md, a manage.py script, and a *myproj* Python package directory was created. Rename the outer (project) directory to anything you wish, but don't modify the inner (package) directory or package name.
+A *djproj* **project directory** containing a README.md, a manage.py script, and a *djproj* Python **package directory** was created. Rename the outer (project) directory to anything you wish, but don't modify the inner (package) directory, its the package name for you Django application.
 
-    mv myproj newname        # optional
+    mv djproj newname        # optionally rename project directory
 
-If you specified an output path after *myproj* in the template command, the project directory *contents* will be placed at that location, not within a project directory.
+If you specified a destination path after *djproj* in the startproject command, the project directory *contents* will be generated at that path location, not within a generated project directory.
 
-Navigate into the directory containing the project. For all of the remaining instructions, you should be located inside the project directory.
+Navigate into the project directory. You can run the commands in the rest of the instructions from there.
 
 ### Database Type
 
-django-project-template encourages use of MySQL or PostgreSQL in development, for greater parity with the staging and production environments. Install and configure either MySQL([guide]()) or PostgreSQL([guide]()) on your local machine if you have not already done so. Next remove requirements that are commented with databases you are not using. Also, in your project's README.md file, under `Prerequisites`, remove mention of any databases you are not using.
+`django-project-template` encourages you to use MySQL or PostgreSQL in development, to match whichever database you plan to use in your staging and production environments. Depending on which database you've chosen, comment or delete the following items inside your generated Django application, depending on which databases you're not using:
 
-Open the settings.py file within your project package directory and uncomment one of the MySQL, PostgreSQL, or SQLite settings sections within DATABASES. Check that the default database url string has the correct scheme, username, password, port, and database name.
++ README database `Prerequisites`
++ database specific requirements in requirements/development.txt, requirements/production.txt
++ *djproj*/settings/common.py DATABASES setting
 
-django-project-template allows storing local database authentication credentials in source code since in development environments, throw-away database accounts and databases are frequently used. However, if this is a concern, remove the default keyword argument to `dj_database_url.config` entirely so the database used by the Django project is configured by the DATABASE_URL environment variable alone.
+In particular, ensure that the settings/common.py DATABASES default database url string has the correct scheme, username, password, port, and database name for your local database. It is generally ok to store local database authentication credentials in source, since your local database account is likely a throw-away account. However, if this is a concern, remove the 'default' keyword argument to `dj_database_url.config` entirely so the database used by the Django project is configured by the DATABASE_URL environment variable alone.
 
-## Going Further
+## Start Developing
 
-The django-project-template README is divided into 2 parts. The first is django-project-template specific and describes how to generate a Django project from the template. The second part begins with the heading "{{project_name}} Project" and serves as a skeleton README of the generated project - it is personalized for your project so instead of {% templatetag openblock %} project_name {% templatetag closeblock %} blocks, your project name will be used instead. 
-
-If you haven't already, switch to the README.md file generated inside your personal Django project and continue following the directions there, from this point. 
-
-Once you develop your project a little further, you may delete the first part of this README so it focuses on your Django Project, its setup, etc. 
+You have successfully generated a Django application based on the `django-project-template`. You can now commit and distribute the initial version to other developers on your team if you wish. The README generated inside the application has been customized for your project. It documents local setup, workflows, and deployments.
 
 ## Contributing
 
-Want a particular feature? Discovered a bug or problem? Open an issue. Here are some nice [Issue Guidelines](https://github.com/necolas/issue-guidelines/blob/master/CONTRIBUTING.md) you can follow. 
+Want a particular feature? Discovered a bug or problem? Open an [Issue](https://github.com/dghubble/django-project-template/issues) or send a [Pull Request](https://github.com/dghubble/django-project-template/pulls) and I'll get back to you.
 
-
-
-# {{project_name}} Project
+{% endif %}
+# {{project_name|title}} Project
 
 ## Overview
 
-{{project_name}} a Django web application ...
+{{project_name}}, a Django web application ...
 
-... initially based on the [django-project-template](https://github.com/dghubble/django-project-template).
+... initially generated with the [dghubble/django-project-template](https://github.com/dghubble/django-project-template).
 
 ## Prerequisites
 
-If you haven't already, install and configure MySQL on your local machine ([guide]()). 
-If you haven't already, install and configure PostgreSQL on your local machine ([guide]()). 
+Be sure you have the following installed on your development machine:
 
-Create a database user and also a database {{project_name}}_dev to use for development. Ensure the database url string under DATABASES in {{project_name}}/settings/common.py corresponds to your setup.
++ Python >= 2.7
++ Git >= 1.7
++ Virtualenv >= 1.9
++ Database (either one):
+    + MySQL >= 5.6 ([guide]())
+    + Postgres >= 9.2 ([guide]())
++ (recommended) Virtualenvwrapper >= 4.0
 
-## Setup
+Create a database user and a database {{project_name}}_dev to use for development. Ensure that the `default` DATABASES url string in {{project_name}}/settings/common.py corresponds to your database.
 
-Create a virtual environment in which to install Python pip packages. Virtual environment activation with [virtualenv](https://pypi.python.org/pypi/virtualenv),
+## Quickstart
 
-    virtualenv venv          # create virtualenv venv
-    source venv/bin/activate # activate 
+Create a virtual environment in which to install Python pip packages. With [virtualenv](https://pypi.python.org/pypi/virtualenv),
+
+    virtualenv venv            # create a virtualenv
+    source venv/bin/activate   # activate the Python virtualenv 
 
 or with [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/),
 
-    mkvirtualenv myproj       # create and activate environment
-    workon myproj             # reactivate existing environment
+    mkvirtualenv {{project_name}}   # create and activate environment
+    workon {{project_name}}   # reactivate existing environment
 
 Install development dependencies,
 
@@ -103,7 +125,7 @@ Install development dependencies,
 
 Setup database tables,
 
-    python manage.py syncdb  # create neccessary tables
+    python manage.py syncdb   # create neccessary tables
 
 Run the web application locally,
 
@@ -134,12 +156,12 @@ In development, static assets are hosted at '<base_url>/static/' + namespacing a
 
     <img src="{% templatetag openblock %} static 'appname/img/myimage.png' {% templatetag closeblock %}" alt="myimage">
 
-{{project_name}} uses the standard `django.contrib.staticfiles` app so in development, when the DEBUG setting is true, static assets are served automatically with runserver. 
+This project uses the standard `django.contrib.staticfiles` app so in development, when the DEBUG setting is true, static assets are served automatically with runserver. 
 
 
 ### Deploying Static Resources
 
-In staging and production environments, using a web process to serve static assets is not appropriate. {{project_name}} uses `django-storages` adapters to upload collected static assets to Amazon S3 and to replace static template tags correctly.
+In staging and production environments, using a web process to serve static assets is not appropriate. Instead, `django-storages` adapters are used to upload collected static assets to Amazon S3 and to replace static template tags correctly.
 
 First, create [S3 buckets](https://console.aws.amazon.com/s3) {{project_name}}-static-stag and {{project_name}}-static (set in {{project_name}}/settings/staging.py and {{project_name}}/settings/production.py) for static assets. Then create two [IAM](https://console.aws.amazon.com/iam/home) users {{project_name}}_stag and {{project_name}} with the Full S3 Access permission policy.
 

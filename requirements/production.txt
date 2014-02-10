@@ -1,6 +1,5 @@
 Django==1.6
 dj-database-url==0.2.2
-gunicorn==18.0
 django-sslify==0.2
 
 # Static Assets
@@ -9,3 +8,6 @@ boto==2.19.0
 
 # MySQL only
 MySQL-python==1.2.4
+
+# Production
+gunicorn==18.0

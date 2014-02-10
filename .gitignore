@@ -57,3 +57,6 @@ STATIC_ROOT/
 
 # OS X Files
 .DS_Store
+
+# Other
+SELFNOTES.md

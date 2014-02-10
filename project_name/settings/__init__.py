@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from {{project_name}}.settings.common import *
 
 # APP_ENV environment variable determines environment
-app_env = os.getenv('APP_ENV')
+app_env = os.environ.get('APP_ENV')
 valid_app_envs = ['development', 'dev', 'staging', 'stage', 'stag', 'production', 'prod']
 
 # Apply environment specific settings
